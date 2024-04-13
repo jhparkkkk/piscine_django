@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html lan="eng">
+    <head>
+        <meta charset="UTF-8">
+        <title>Form</title>
+        <script src="popup.js" defer></script>
+        <style>
+            body {
+                font-family: 'Courier New', Courier, monospace;
+                padding: 1rem;
+            }
+            .form-field-group {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+
+            }
+            .button {
+                background-color: rgb(102, 172, 102);
+                color: white;
+                padding: 4px 6px;
+                border: 2px solid black;
+                border-radius: 5px;
+                font-size: 16px;
+                font-family: 'Courier New', Courier, monospace;
+                cursor: pointer;
+            }
+            .button:hover {
+                background-color: rgb(144, 238, 144);
+            }
+        </style>
+    </head>
+    <body>
+        <form>
+            <table>
+                <tr>
+                    <td><label for="firstname">First name:</label></td>
+                    <td><input type="text" id="firstname"></td>
+                </tr>
+                <tr>
+                    <td><label for="name">Name:</label></td>
+                    <td><input type="text" id="name"></td>
+                </tr>
+                
+                <tr>
+                    <td><label for="phone">Phone:</label></td>
+                    <td><input type="text" id="phone"></td>
+                </tr>
+
+                <tr>
+                    <td><label for="age">Age:</label></td>
+                    <td><input type="text" id="age"></td>
+                </tr>
+
+                <tr>
+                    <td><label for="email">Email:</label></td>
+                    <td><input type="text" id="email"></td>
+                </tr>
+
+                <tr>
+                    <td><label for="student">Student at 42?</label></td>
+                    <td><input type="checkbox" id="student" name="student"></td>
+                </tr>
+                <tr>
+                    <td>Gender:</td>
+                    <td>
+                        <input type="radio" id="gender_male" name="gender" value="Male"><label for="gender_male">Male</label>
+                        <input type="radio" id="gender_female" name="gender" value="Female"><label for="gender_female">Female</label>
+                        <input type="radio" id="gender_other" name="gender" value="Other"><label for="gender_other">Other</label>
+                    </td>
+                </tr>
+            </table>
+            <button class="button" type="button" onclick="displayFormContents()">Submit</button>
+        </div>
+        </form>
+    </body>
+
+</html>
