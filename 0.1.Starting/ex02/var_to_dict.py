@@ -57,12 +57,15 @@ def print_dict(my_dict: dict):
 
 
 if __name__ == "__main__":
-    # create a dictionary and a list
-    my_dict = {}
-    my_list = get_list()
+    try:
+        # create a dictionary and a list
+        my_dict = {}
+        my_list = get_list()
 
-    # convert list into dict
-    my_dict = convert(my_list, my_dict)
+        # convert list into dict
+        my_dict = convert(my_list, my_dict)
 
-    # display
-    print_dict(my_dict)
+        # display
+        print_dict(my_dict)
+    except Exception as error:
+        print(error)
