@@ -48,7 +48,10 @@ def preprocess_data(
     capital_cities = {k: v.lower() for k, v in capital_cities.items()}
 
     raw_input = raw_input.split(", ")
-    raw_input = [item for item in raw_input if item]
+    raw_input = [item.strip() for item in raw_input if item]
+    
+    if  len(raw_input[0]) == 0:
+        raise ValueError()
 
     return raw_input, states, capital_cities
 
