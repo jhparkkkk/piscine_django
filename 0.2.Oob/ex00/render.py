@@ -38,6 +38,9 @@ def escape_html(text: str) -> str:
         Returns:
         str: escaped text
     """
+    if not isinstance(text, str):
+        raise TypeError('Text to be escaped must be a string')
+
     html_escapes = {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}
 
     return "".join(html_escapes.get(char, char) for char in text)
@@ -106,7 +109,7 @@ if __name__ == "__main__":
         filename = parse_argument()
         template_content = read_template(filename)
         html_content = render_template(template_content)
-        save_file(html_content, "test.html")
+        save_file(html_content, "myCV.html")
 
     except (ValueError, AssertionError) as e:
         print(f"Error parsing arguments: {e}", file=sys.stderr)
