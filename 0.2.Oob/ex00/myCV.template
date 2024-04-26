@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{name}'s CV</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{name}, {profession}</h1>
+            <p>City: {location}</p>
+            <p>Age: {age}</p>
+            
+        </header>
+
+        <section class="education">
+            <h2>Education</h2>
+            <h3>{education_1_school}</h3>
+            <ul>
+                <li>{education_1_year}</li>
+                <li>{education_1_degree}</li>
+            </ul>
+            <h3>{education_2_school}</h3>
+            <ul>
+                <li>{education_2_year}</li>
+                <li>{education_2_degree}</li>
+            </ul>            
+        </section>
+
+        <section class="technical-skills">
+            <h2>Technical Skills</h2>
+            <ul>
+                <li>{skill_1}</li>
+                <li>{skill_2}</li>
+                <li>{skill_3}</li>
+                <li>{skill_4}</li>
+            </ul>
+        </section>
+    </div>
+</body>
+</html>
