@@ -1,9 +1,12 @@
 class Text(str):
     def __str__(self):
         escaped_text = (super().__str__()
+                        .replace('&', '&amp;')
                         .replace('<', '&lt;')
                         .replace('>', '&gt;')
-                        .replace('"', '&quot;'))
+                        # .replace('"', '&quot;')
+                        .replace("'", '&#39;')
+                        .replace("/", '&#x2F;'))
         return escaped_text.replace('\n', '\n<br />\n')
 
 class Elem:
@@ -17,7 +20,7 @@ class Elem:
         self.tag_type = tag_type
         self.set_content(content)
 
-    
+
     def set_content(self, content):
         if content is None:
             self.content = []
@@ -31,7 +34,7 @@ class Elem:
 
     def __str__(self):
         attr_str = self.__make_attr()
-        content_str = self.__make_content(1)
+        content_str = self.__make_content(indent_level=1)
         if self.tag_type == 'double':
             if content_str.strip(): 
                 return f"<{self.tag}{attr_str}>\n{content_str}\n</{self.tag}>"
@@ -43,19 +46,18 @@ class Elem:
     def __make_attr(self):
         return ''.join(f' {attr}="{value}"' for attr, value in self.attr.items())
 
-    def __make_content(self, indent_level):
-        if not self.content:
-            return ''
-        
+    def __make_content(self, indent_level):        
         indent = '  ' * indent_level
+
         content_lines = []
-        for elem in self.content:
-            if isinstance(elem, Elem):
-                element_string = elem.__str__()
+        for element in self.content:
+            if isinstance(element, Elem):
+                # convert type Elem to str to create indentation
+                element_string = str(element)
                 indented_element = '\n'.join(indent + line for line in element_string.split('\n'))
                 content_lines.append(indented_element)
-            elif isinstance(elem, Text) and str(elem).strip():
-                content_lines.append(indent + str(elem))
+            elif isinstance(element, Text) and str(element):
+                content_lines.append(indent + str(element))
 
         return '\n'.join(content_lines)
 
@@ -73,14 +75,30 @@ class Elem:
                (isinstance(content, list) and all(isinstance(elem, (Elem, Text)) for elem in content))
 
 if __name__ == "__main__":
-    title = Elem(tag='title', content=Text("Hello ground!"), tag_type='double')
+    title = Elem(tag='title', content=Text("\"Hello ground!\""), tag_type='double')
     head = Elem(tag='head', content=title, tag_type='double')
     
-    h1 = Elem(tag='h1', content=Text("Oh no, not again!"), tag_type='double')
+    h1 = Elem(tag='h1', content=Text("\"Oh no, not again!\""), tag_type='double')
     img = Elem(tag='img', attr={'src': "http://i.imgur.com/pfp3T.jpg"}, tag_type='simple')
     
     body = Elem(tag='body', content=[h1, img], tag_type='double')
     
     html = Elem(tag='html', content=[head, body], tag_type='double')
     
-    print(html)
+    try:
+        test = """<html>
+  <head>
+    <title>
+      "Hello ground!"
+    </title>
+  </head>
+  <body>
+    <h1>
+      "Oh no, not again!"
+    </h1>
+    <img src="http://i.imgur.com/pfp3T.jpg" />
+  </body>
+</html>"""
+        assert str(html) == str(test), "Found differences"
+    except Exception as e:
+        print('ici', e)
