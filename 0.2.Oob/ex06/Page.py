@@ -18,6 +18,14 @@ class Page():
         return True
 
     def _validate_head(self, node):
+        if not node.content:
+            raise ValueError("Head cannot be empty")
+        
+        if len(node.content) != 1:
+            raise ValueError("Head must only contain one element.")
+        
+        if not isinstance(node.content[0], Title):
+            raise TypeError("Head must only contain one Title")
         return True
 
     def _validate_body(self, node):
@@ -41,7 +49,7 @@ class Page():
             
             # check if node type is in validation dict
             if not validate_func:
-                print(Fore.RED, f'invalid type', Fore.RESET)
+                # print(Fore.RED, f'invalid type', Fore.RESET)
                 return False
 
             # attempt to validate node 
@@ -56,12 +64,12 @@ class Page():
                 for child in node.content:
                     # print(Fore.YELLOW, 'child', child, Fore.RESET)
                     if not validate(child):
-                        print(Fore.RED, 'INVALID', Fore.RESET)
+                        # print(Fore.RED, 'INVALID', Fore.RESET)
                         return False
 
             return True
         
-        print(Fore.GREEN, "valid node", Fore.RESET)
+        # print(Fore.GREEN, "valid node", Fore.RESET)
 
         return validate(self.root)
 

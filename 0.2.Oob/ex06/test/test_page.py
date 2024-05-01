@@ -15,35 +15,97 @@ class TestPage(unittest.TestCase):
             def __init__(self, content=None, attr=None):
                 super().__init__(content, {'invalid_attr': 'invalid_value'})
 
-        self.assertEqual(Page(InvalidNodeElem()).is_valid(), False)
-        self.assertEqual(Page(Html(InvalidNodeElem())).is_valid(), False)
-        self.assertEqual(Page(InvalidNodeHtml()).is_valid(), False)
-        self.assertEqual(Page(Html([Head(Title()), InvalidNodeHtml()])).is_valid(), False)
-    
+        cases = [
+            InvalidNodeElem(),
+            Html(InvalidNodeElem()),
+            InvalidNodeHtml(),
+            Html([Head(Title()), InvalidNodeHtml()])
+        ]
+        
+        for case in cases:
+            with self.subTest(case=case):
+                page = Page(case)
+                self.assertFalse(page.is_valid())
+
 
 class TestHtml(unittest.TestCase):
+    """
+    Tests for validating the structure of Html element.
+    """
     def test_valid_html(self):
         """test valid html element
         """
-        html = Page(Html([Head(), Body()]))
-        self.assertEqual(html._validate_html(html.root), True)
-        self.assertEqual(html.is_valid(), True)
-
+        valid_html = Page(Html([Head(), Body()]))
+        self.assertTrue(valid_html._validate_html(valid_html.root))
 
     def test_html_invalid_child_count(self):
         """test html element with wrong numbers of child nodes
         """
         cases = [
-            [],
-            [Head()],
-            [Head(), Head(), Head()]
+            (Html(), "empty Html"),
+            (Html([Head()]), "Html with only one element"),
+            (Html([Head(), Head(), Head()]), "Html with more than two elements")
         ]
 
-        for childen in cases:
-            with self.subTest(childen=childen):
-                page = Page(Html(childen))
-                with self.assertRaises(ValueError):
+        for case, description in cases:
+            with self.subTest(description=description):
+                page = Page(case)
+                self.assertFalse(page.is_valid())
+                with self.assertRaises(ValueError, msg=f"HTML with {description} did not raise ValueError"):
                     page._validate_html(page.root)
+                
+    
+    def test_html_without_mandatory_head(self):
+        """test html element without Head as first child node 
+        """
+        page = Page(Html([Body(), Head()]))
+
+        self.assertFalse(page.is_valid())
+
+        with self.assertRaises(TypeError):
+            page._validate_html(page.root)
+
+    def test_html_without_mandatory_Body(self):
+        """test html element without Body as second child node 
+        """
+
+        page = Page(Html([Head(), Head()]))
+        
+        self.assertFalse(page.is_valid())
+        
+        with self.assertRaises(TypeError):
+            page._validate_html(page.root)
+
+class TestHead(unittest.TestCase):
+    def test_valid_head(self):
+        """test valid head element
+        """
+        valid_head = Head(Title())
+        page = Page(valid_head)
+        self.assertTrue(page._validate_head(page.root))
+
+    def test_empty_head(self):
+        """test empty head
+        """
+        page = Page(Head())
+        with self.assertRaises(ValueError):
+            page._validate_head(page.root)
+    
+    def test_head_invalid_child_count(self):
+        """test head with invalid number of child nodes
+        """
+        page = Page(Head([Body(), Body()]))
+        with self.assertRaises(ValueError):
+            page._validate_head(page.root)
+
+
+    def test_head_without_mandatory_title(self):
+        """test head without its mandatory Title
+        """
+        page = Page(Head(Body()))
+        with self.assertRaises(TypeError):
+            page._validate_head(page.root)
+
 
                                                                                                                                                                                                                                                                                                                                    
 
