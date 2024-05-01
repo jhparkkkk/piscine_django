@@ -3,52 +3,57 @@ from elements import *
 from colorama import Fore
 class Page():
     def __init__(self, root: Elem) -> None:
-
-        try:
-            self.root = root
-        except Exception as e:
-            return False
-        print(f'root: {root}')
+        self.root = root
     
+    def _validate_html(self, node):
+       return True
+
     def _validate_head(self, node):
-        # if isinstance(node, Head):
         titles = [n for n in node.content if isinstance(n, Title)]
         if len(titles) != 1:
             print("Invalid: Head must contain exactly one Title")
             return False
 
-    def _validate_html(self, node):
-       print(Fore.BLUE, "validate_html", Fore.RESET)
-       return True
-       pass         
+    def _validate_body(self, node):
+        return True
+
+    def _validate_title(self, node):
+        return True         
 
     def is_valid(self):
 
         validation_dict = {
             Html: self._validate_html,
-            Head: self._validate_head
+            Head: self._validate_head,
+            Body: self._validate_body,
+            Title: self._validate_title
         }
 
         def validate(node):
-            # if node not in valid_types:
-            #     print(f"Invalid node type: {type(node).__name__}")
-            #     return False
-        
+
             validate_func = validation_dict.get(type(node), False)
             
-            if validate_func == False:
-                print(Fore.RED, 'INVALID', Fore.RESET)
+            # check if node type is in validation dict
+            if not validate_func:
+                print(Fore.RED, f'invalid type', Fore.RESET)
+
                 return False
 
-            if not validate_func(node):
+            # attempt to validate node 
+            try:
+                validate_func(node)
+            except Exception as e:
+                print(e)
                 return False
+
+            # recursively check each node
             if hasattr(node, 'content'):
                 for child in node.content:
                     if not validate(child):
                         print(Fore.RED, 'INVALID', Fore.RESET)
                         return False
 
-            print(Fore.CYAN, "TRUE", Fore.RESET)
+            print(node, Fore.GREEN, "valid node", Fore.RESET)
             return True
 
         return validate(self.root)

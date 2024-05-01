@@ -18,10 +18,10 @@ class TestPage(unittest.TestCase):
         self.assertEqual(Page(InvalidNodeElem()).is_valid(), False)
         self.assertEqual(Page(Html(InvalidNodeElem())).is_valid(), False)
         self.assertEqual(Page(InvalidNodeHtml()).is_valid(), False)
-        self.assertEqual(Page(Html([Head(), InvalidNodeHtml()])).is_valid(), False)
+        self.assertEqual(Page(Html([Head(Title()), InvalidNodeHtml()])).is_valid(), False)
     
     def test_valid_node(self):
-        self.assertEqual(Page(Html()).is_valid(), True)
+        self.assertEqual(Page(Html([Head(), Body()])).is_valid(), True)
 
     
                                                                                                                                                                                                                                                                                                                                    
