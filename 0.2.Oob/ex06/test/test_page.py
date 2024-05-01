@@ -5,7 +5,7 @@ from Page import Page
 
 class TestPage(unittest.TestCase):
     def test_invalid_node(self):
-        """Test invalid node
+        """test invalid node
         """
         class InvalidNodeElem(Elem):
             def __init__(self, content=None, attr={}):
@@ -20,10 +20,31 @@ class TestPage(unittest.TestCase):
         self.assertEqual(Page(InvalidNodeHtml()).is_valid(), False)
         self.assertEqual(Page(Html([Head(Title()), InvalidNodeHtml()])).is_valid(), False)
     
-    def test_valid_node(self):
-        self.assertEqual(Page(Html([Head(), Body()])).is_valid(), True)
 
-    
+class TestHtml(unittest.TestCase):
+    def test_valid_html(self):
+        """test valid html element
+        """
+        html = Page(Html([Head(), Body()]))
+        self.assertEqual(html._validate_html(html.root), True)
+        self.assertEqual(html.is_valid(), True)
+
+
+    def test_html_invalid_child_count(self):
+        """test html element with wrong numbers of child nodes
+        """
+        cases = [
+            [],
+            [Head()],
+            [Head(), Head(), Head()]
+        ]
+
+        for childen in cases:
+            with self.subTest(childen=childen):
+                page = Page(Html(childen))
+                with self.assertRaises(ValueError):
+                    page._validate_html(page.root)
+
                                                                                                                                                                                                                                                                                                                                    
 
 if __name__ == "__main__":

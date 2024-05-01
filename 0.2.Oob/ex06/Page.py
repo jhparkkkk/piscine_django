@@ -6,13 +6,19 @@ class Page():
         self.root = root
     
     def _validate_html(self, node):
-       return True
+        if len(node.content) != 2:
+            raise ValueError("Html node must contain 2 elements.")
+
+        if not isinstance(node.content[0], Head):
+            raise TypeError("The first child of Html node must be a Head.")
+        
+        if not isinstance(node.content[1], Body):
+            raise TypeError("The second child of Html node must be a Body")
+
+        return True
 
     def _validate_head(self, node):
-        titles = [n for n in node.content if isinstance(n, Title)]
-        if len(titles) != 1:
-            print("Invalid: Head must contain exactly one Title")
-            return False
+        return True
 
     def _validate_body(self, node):
         return True
@@ -36,7 +42,6 @@ class Page():
             # check if node type is in validation dict
             if not validate_func:
                 print(Fore.RED, f'invalid type', Fore.RESET)
-
                 return False
 
             # attempt to validate node 
@@ -49,12 +54,14 @@ class Page():
             # recursively check each node
             if hasattr(node, 'content'):
                 for child in node.content:
+                    # print(Fore.YELLOW, 'child', child, Fore.RESET)
                     if not validate(child):
                         print(Fore.RED, 'INVALID', Fore.RESET)
                         return False
 
-            print(node, Fore.GREEN, "valid node", Fore.RESET)
             return True
+        
+        print(Fore.GREEN, "valid node", Fore.RESET)
 
         return validate(self.root)
 
