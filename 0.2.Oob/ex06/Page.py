@@ -26,13 +26,54 @@ class Page():
         
         if not isinstance(node.content[0], Title):
             raise TypeError("Head must only contain one Title")
+        
         return True
 
+
     def _validate_body(self, node):
+        allowed_elements = [H1, H2, Div, Table, Ul, Ol, Span, Text]
+        
+        for child in node.content:
+            if type(child) not in allowed_elements:
+                raise TypeError('Body must only contain the following types of elements: H1, H2, Div, Table, Ul, Ol, Span, Text')
+
+        return True
+
+    def _validate_div(self, node):
+        allowed_elements = [H1, H2, Div, Table, Ul, Ol, Span, Text]
+        
+        for child in node.content:
+            if type(child) not in allowed_elements:
+                raise TypeError('Div must only contain the following types of elements: H1, H2, Div, Table, Ul, Ol, Span, Text')
         return True
 
     def _validate_title(self, node):
-        return True         
+        if len(node.content) != 1:
+            raise ValueError("Title must contain one element")
+        if not isinstance(node.content[0], Text):
+            raise TypeError("Title must contain only Text")
+        return True
+
+    def _validate_H1(self, node):
+        if len(node.content) != 1:
+            raise ValueError("H1 must contain one element")
+        if not isinstance(node.content[0], Text):
+            raise TypeError("H1 must contain only Text")
+        return True
+
+    def _validate_H2(self, node):
+        if len(node.content) != 1:
+            raise ValueError("H2 must contain one element")
+        if not isinstance(node.content[0], Text):
+            raise TypeError("H2 must contain only Text")
+        return True
+
+    def _validate_Li(self, node):
+        if len(node.content) != 1:
+            raise ValueError("H2 must contain one element")
+        if not isinstance(node.content[0], Text):
+            raise TypeError("H2 must contain only Text")
+        return True             
 
     def is_valid(self):
 
@@ -40,7 +81,13 @@ class Page():
             Html: self._validate_html,
             Head: self._validate_head,
             Body: self._validate_body,
-            Title: self._validate_title
+            Title: self._validate_title,
+            H1: self._validate_h1,
+            H2: self._validate_h2,
+            Li: self._validate_Li,
+            Th: self._validate_Th,
+            Td: self._validate_Td,
+            
         }
 
         def validate(node):

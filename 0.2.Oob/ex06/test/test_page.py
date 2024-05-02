@@ -1,6 +1,7 @@
 import unittest
 from elem import Elem
 from elements import Html, Head, Body, Title, Meta, Img, Table, Th, Tr, Td, Ul, Ol, Li, H1, H2, P, Div, Span, Hr, Br
+from elements import Text
 from Page import Page
 
 class TestPage(unittest.TestCase):
@@ -106,8 +107,61 @@ class TestHead(unittest.TestCase):
         with self.assertRaises(TypeError):
             page._validate_head(page.root)
 
+class TestBody(unittest.TestCase):
+    def test_valid_body(self):
+        """test valid body element
+        """
+        cases = [
+            Body(),
+            Body(Text()),
+            Body([H1(), H2(), Div(), Table(), Ul(), Ol(), Span(), Text()])
+            
+        ]
+        for case in cases:
+            page = Page(case)
+            self.assertTrue(page._validate_body(page.root))
 
-                                                                                                                                                                                                                                                                                                                                   
+    def test_body_invalid_child_nodes(self):
+        """test body with invalid child nodes
+        """
+        cases = [
+            Body(Body()),
+            Body([Html(), Text("Plop")]),
+            Body(Title())
+        ]
+
+        for case in cases:
+            page = Page(case)
+            with self.assertRaises(TypeError):
+                page._validate_body(page.root)
+
+class TestDiv(unittest.TestCase):
+    def test_valid_div(self):
+        """test valid body element
+        """
+        cases = [
+            Div(),
+            Div(Text()),
+            Div([H1(), H2(), Div(), Table(), Ul(), Ol(), Span(), Text()])
+            
+        ]
+        for case in cases:
+            page = Page(case)
+            self.assertTrue(page._validate_div(page.root))
+
+    def test_div_invalid_child_nodes(self):
+        """test body with invalid child nodes
+        """
+        cases = [
+            Div(Body()),
+            Div([Html(), Text("Plop")]),
+            Div(Title())
+        ]
+
+        for case in cases:
+            page = Page(case)
+            with self.assertRaises(TypeError):
+                page._validate_div(page.root)   
 
 if __name__ == "__main__":
     unittest.main()
