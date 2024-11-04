@@ -6,4 +6,7 @@ if [ $# -ne 1 ]
     exit 1
 fi
 
-curl -sI --head $1 |grep -i Location|awk '{print $2}'
+curl -sI --head $1 |grep -i Location|cut -d' ' -f2
+
+
+
