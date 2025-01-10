@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th {
+            background-color: blue;
+        }
+
+        th, td {
+            border: 1px solid black;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: pink;
+        }
+    </style>
+</head>
+<body>
+    <table>
+    {% for row in rows %}
+    <tr>
+        {% for col in cols %}
+        {% if row == 0 %}
+        <th>{{ "header" }}</th>
+        {% else %}
+        <td>{{ "plop" }}</td>
+        {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+  </table> 
+</body>
+</html>

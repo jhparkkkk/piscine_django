@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{title}}{% endblock %}</title>
+    {% if id == "templates"%}
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    {% else %}
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+    {% endif %}
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 20px;
+            color: #181d27;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    {% block nav %}{% include 'nav.html' %}{% endblock nav %}
+    <h2>{% block subtitle %}{{title}}{% endblock %}</h2>
+    <div id="content">
+        {% block content %}
+        {% for content in contents %}
+            <h3>{{content.title}}</h3>
+            <p>{{content.body}}</p>
+        {% endfor %}
+        {% endblock %}
+    </div>
+</body>
+</html>
