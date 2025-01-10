@@ -126,3 +126,29 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "ex02", "logs"),
+            "formatter": "timestamp",
+        },
+    },
+    "loggers": {
+        "ex02": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+    "formatters": {
+        'timestamp': {
+            'format': '{asctime} - {message}',
+            'style': '{',
+        },
+    }
+}
