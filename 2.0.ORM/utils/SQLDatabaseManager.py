@@ -12,6 +12,9 @@ class DatabaseManager:
             port=settings.DATABASES['default']['PORT']
         )
 
+    def disconnect(self):
+        self.conn.close()
+
     def execute_query(self, query, fetch=False):
         try:
             with self.conn as conn:
@@ -37,6 +40,26 @@ class DatabaseManager:
         self.execute_query(query)
         print(f"Table {table_name} created successfully.")
 
+    def get_table_columns(self, table_name):
+        query = f"SELECT column_name FROM information_schema.columns WHERE table_name = '{
+            table_name}';"
+        try:
+            res = self.execute_query(query, fetch=True)
+            print(res)
+            columns = [row[0] for row in res]
+            print(f"Columns for table {table_name}: {columns}")
+            return columns
+        except Exception as e:
+            raise Exception(f"Failed to fetch columns for table {
+                            table_name}: {e}")
+
+    def alter_table(self, table_name, column_name, column_type, *constraints):
+        constraints_str = ' '.join(constraints)
+        query = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {
+            column_name} {column_type} {constraints_str};"
+        self.execute_query(query)
+        print(f"Column {column_name} added to table {table_name}.")
+
     def drop_table(self, table_name):
         query = f"DROP TABLE IF EXISTS {table_name};"
         self.execute_query(query)
@@ -47,6 +70,46 @@ class DatabaseManager:
         res = self.execute_query(query, fetch=True)
         for elem in res:
             print(elem)
+
+    def create_trigger_function(self, function_name):
+        """Crée une fonction pour mettre à jour la colonne 'updated'."""
+        query = f"""
+        CREATE OR REPLACE FUNCTION {function_name}()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            NEW.updated = now();
+            NEW.created = OLD.created;
+            RETURN NEW;
+        END;
+        $$ LANGUAGE 'plpgsql';
+        """
+        self.execute_query(query)
+
+    def create_trigger(self, table_name, trigger_name, function_name):
+        query_check = f"""
+        SELECT EXISTS (
+            SELECT 1
+            FROM pg_trigger
+            WHERE tgname = '{trigger_name}'
+        );
+        """
+        result = self.execute_query(query_check, fetch=True)
+        if result and result[0][0]:
+            print(f"Trigger '{trigger_name}' already exists for table '{
+                  table_name}'.")
+            return
+        self.create_trigger_function(function_name)
+        query = f"""
+        CREATE TRIGGER {trigger_name}
+        BEFORE UPDATE ON {table_name}
+        FOR EACH ROW EXECUTE FUNCTION {function_name}();
+        """
+        self.execute_query(query)
+
+    def select_if_exists(self, table_name, column, value):
+        query = f"SELECT * FROM {table_name} WHERE {column} = '{value}';"
+        res = self.execute_query(query, fetch=True)
+        return res
 
     def insert(self, table_name, **kwargs):
         columns = ', '.join(kwargs.keys())
@@ -63,47 +126,14 @@ class DatabaseManager:
             print(elem)
         return res
 
+    def delete(self, table_name, column, value):
+        query = f"DELETE FROM {table_name} WHERE {column} = '{value}';"
+        self.execute_query(query)
+        print(f"Deleted {value} from {table_name}.")
 
-def connect_to_db():
-    return psycopg2.connect(
-        dbname='formationdjango',
-        user='postgres',
-        password='secret',
-        host='localhost',
-        port='5432'
-    )
-
-
-def get_all_tables(cursor):
-    cursor.execute(
-        "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';")
-    tables = cursor.fetchall()
-    print(tables)
-
-
-def create_table(table_name: str = 'ex00_movies'):
-    """
-    Create a table in the PostgreSQL database.
-    """
-    try:
-        conn = connect_to_db()
-        cursor = conn.cursor()
-        query = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
-            episode_nb SERIAL PRIMARY KEY,
-            title VARCHAR(64) UNIQUE NOT NULL,
-            opening_crawl TEXT,
-            director VARCHAR(32) NOT NULL,
-            producer VARCHAR(128) NOT NULL,
-            release_date DATE NOT NULL
-        );
-        """
-        cursor.execute(query)
-        conn.commit()
-
-        get_all_tables(cursor)
-        cursor.close()
-        conn.close()
-        return True
-    except Exception as e:
-        raise e
+    def update(self, table_name, column, value, data):
+        data_str = ', '.join([f"{k} = '{v}'" for k, v in data.items()])
+        query = f"UPDATE {table_name} SET {
+            data_str} WHERE {column} = '{value}';"
+        self.execute_query(query)
+        print(f"Updated {value} in {table_name}.")

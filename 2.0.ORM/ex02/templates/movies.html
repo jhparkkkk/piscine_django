@@ -15,12 +15,9 @@
     <table>
         <thead>
             <tr>
-                <th>id</th>
-                <th>title</th>
-                <th>opening crawl</th>
-                <th>director</th>
-                <th>producer</th>
-                <th>release date</th>
+                {% for column in columns %}
+                <th>{{ column }}</th>
+                {% endfor %}
             </tr>
         </thead>
         <tbody>

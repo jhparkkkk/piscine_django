@@ -1,8 +1,7 @@
-from django.urls import path
-from . import views
+from .views import Ex03MoviesViews
+from utils.generate_urls import generate_urls
 
-urlpatterns = [
-    path('populate/', views.populate, name='populate_movie_table'),
-    path('display/', views.display, name='display_movie_table'),
+name = 'ex03'
+actions = ['populate', 'display']
 
-]
+urlpatterns = generate_urls(Ex03MoviesViews, name, actions)
