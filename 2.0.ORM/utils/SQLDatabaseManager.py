@@ -41,8 +41,10 @@ class DatabaseManager:
         print(f"Table {table_name} created successfully.")
 
     def get_table_columns(self, table_name):
-        query = f"SELECT column_name FROM information_schema.columns WHERE table_name = '{
-            table_name}';"
+        query = f"""
+        SELECT column_name FROM information_schema.columns WHERE table_name = '{
+            table_name}';
+        """
         try:
             res = self.execute_query(query, fetch=True)
             print(res)
@@ -50,13 +52,14 @@ class DatabaseManager:
             print(f"Columns for table {table_name}: {columns}")
             return columns
         except Exception as e:
-            raise Exception(f"Failed to fetch columns for table {
-                            table_name}: {e}")
+            raise Exception(f"Failed to fetch columns for table {table_name}: {e}")
 
     def alter_table(self, table_name, column_name, column_type, *constraints):
         constraints_str = ' '.join(constraints)
-        query = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {
-            column_name} {column_type} {constraints_str};"
+        query = f"""
+        ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {
+            column_name} {column_type} {constraints_str};
+        """
         self.execute_query(query)
         print(f"Column {column_name} added to table {table_name}.")
 
@@ -95,8 +98,7 @@ class DatabaseManager:
         """
         result = self.execute_query(query_check, fetch=True)
         if result and result[0][0]:
-            print(f"Trigger '{trigger_name}' already exists for table '{
-                  table_name}'.")
+            print(f"Trigger '{trigger_name}' already exists for table '{table_name}'.")
             return
         self.create_trigger_function(function_name)
         query = f"""
@@ -114,12 +116,15 @@ class DatabaseManager:
     def insert(self, table_name, **kwargs):
         columns = ', '.join(kwargs.keys())
         values = ', '.join([f"'{v}'" for v in kwargs.values()])
-        query = f"INSERT INTO {table_name} ({columns}) VALUES ({values});"
+        query = f"""INSERT INTO {table_name} ({columns}) VALUES ({values});
+        """
         self.execute_query(query)
 
     def select(self, table_name, *columns):
         columns = ', '.join(columns)
-        query = f"SELECT {columns} FROM {table_name};"
+        query = f"""
+        SELECT {columns} FROM {table_name};
+        """
         res = self.execute_query(query, fetch=True)
         print(type(res))
         for elem in res:
@@ -127,13 +132,34 @@ class DatabaseManager:
         return res
 
     def delete(self, table_name, column, value):
-        query = f"DELETE FROM {table_name} WHERE {column} = '{value}';"
+        query = f"""
+        DELETE FROM {table_name} WHERE {column} = '{value}';
+        """
         self.execute_query(query)
         print(f"Deleted {value} from {table_name}.")
 
     def update(self, table_name, column, value, data):
         data_str = ', '.join([f"{k} = '{v}'" for k, v in data.items()])
-        query = f"UPDATE {table_name} SET {
-            data_str} WHERE {column} = '{value}';"
+        query = f"""
+        UPDATE {table_name} SET {
+            data_str} WHERE {column} = '{value}';
+        """
         self.execute_query(query)
         print(f"Updated {value} in {table_name}.")
+    
+    def get_column_names(self, table_name):
+        query = f"""
+        SELECT column_name FROM information_schema.columns WHERE table_name = '{table_name}' ORDER BY ordinal_position;
+        """
+        res = self.execute_query(query, fetch=True)
+        return [row[0] for row in res]
+    
+    def copy_from(self, file, table_name, null="NULL", columns=None, delimiter="\t"):
+        columns = self.get_column_names(table_name) if columns is None else columns
+        print(f"Columns: {columns}")
+        columns.pop(0)
+        with self.conn as conn:
+            with conn.cursor() as cursor:
+                cursor.copy_from(file, table_name, null=null, columns=columns)
+                conn.commit()
+        print(f"Data copied from {file} to {table_name}.")

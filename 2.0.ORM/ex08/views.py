@@ -53,23 +53,12 @@ class Ex08Views(Ex06MoviesViews):
             people_file = path / 'data' / 'people.csv'
 
             with open(planets_file, 'r') as file:
-                db_manager.conn.cursor().copy_expert(
-                    f"""
-                    COPY ex08_planets(name, climate, diameter, orbital_period, population, rotation_period, surface_water, terrain)
-                    FROM STDIN WITH CSV HEADER
-                    """,
-                    file
-                )
+                db_manager.copy_from(file, 'ex08_planets')
+                file.close()
             with open(people_file, 'r') as file:
-                db_manager.conn.cursor().copy_expert(
-                    f"""
-                    COPY ex08_people(name, birth_year, gender, eye_color, hair_color, height, mass, homeworld)
-                    FROM STDIN WITH CSV HEADER
-                    """,
-                    file
-                )
+                db_manager.copy_from(file, 'ex08_people')
+                file.close()
 
-            db_manager.conn.commit()
             return HttpResponse("OK")
         except Exception as e:
             return HttpResponse(f'Error populating {self.table_name}: {e}')
