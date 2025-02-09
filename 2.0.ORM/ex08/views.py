@@ -64,4 +64,21 @@ class Ex08Views(Ex06MoviesViews):
             return HttpResponse(f'Error populating {self.table_name}: {e}')
 
     def display(self, request):
-        return super().display(request)
+        db_manager = DatabaseManager()
+        try:
+            query = """
+            SELECT people.name, people.homeworld, planets.climate
+            FROM ex08_people people
+            JOIN ex08_planets planets ON people.homeworld = planets.name
+            WHERE planets.climate ILIKE '%windy%'
+            ORDER BY people.name;
+            """
+            res = db_manager.execute_query(query, fetch=True)
+            if not res:
+                print(res)
+                return HttpResponse("No data available.")
+
+            return render(request, f'{path}/ex08/templates/planets_people.html', {'data': res})
+
+        except Exception as e:
+            return HttpResponse(f'Error displaying {self.table_name}: {e}')

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windy Planets Characters</title>
+</head>
+<body>
+
+    <h1>Character List (Windy Planets)</h1>
+
+    {% if message %}
+        <p>{{ message }}</p>
+        <code>{{ command }}</code>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Homeworld</th>
+                    <th>Climate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for character in characters %}
+                <tr>
+                    <td>{{ character.name }}</td>
+                    <td>{{ character.homeworld.name }}</td>
+                    <td>{{ character.homeworld.climate }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</body>
+</html>

@@ -52,7 +52,8 @@ class DatabaseManager:
             print(f"Columns for table {table_name}: {columns}")
             return columns
         except Exception as e:
-            raise Exception(f"Failed to fetch columns for table {table_name}: {e}")
+            raise Exception(f"Failed to fetch columns for table {
+                            table_name}: {e}")
 
     def alter_table(self, table_name, column_name, column_type, *constraints):
         constraints_str = ' '.join(constraints)
@@ -98,7 +99,8 @@ class DatabaseManager:
         """
         result = self.execute_query(query_check, fetch=True)
         if result and result[0][0]:
-            print(f"Trigger '{trigger_name}' already exists for table '{table_name}'.")
+            print(f"Trigger '{trigger_name}' already exists for table '{
+                  table_name}'.")
             return
         self.create_trigger_function(function_name)
         query = f"""
@@ -146,16 +148,17 @@ class DatabaseManager:
         """
         self.execute_query(query)
         print(f"Updated {value} in {table_name}.")
-    
+
     def get_column_names(self, table_name):
         query = f"""
         SELECT column_name FROM information_schema.columns WHERE table_name = '{table_name}' ORDER BY ordinal_position;
         """
         res = self.execute_query(query, fetch=True)
         return [row[0] for row in res]
-    
+
     def copy_from(self, file, table_name, null="NULL", columns=None, delimiter="\t"):
-        columns = self.get_column_names(table_name) if columns is None else columns
+        columns = self.get_column_names(
+            table_name) if columns is None else columns
         print(f"Columns: {columns}")
         columns.pop(0)
         with self.conn as conn:

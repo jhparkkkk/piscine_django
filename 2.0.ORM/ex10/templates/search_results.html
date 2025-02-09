@@ -1,0 +1,32 @@
+{% block content %}
+<h2>Movie Character Search</h2>
+
+<form method="GET">
+    {{ form.as_p }}
+    <button type="submit">Search</button>
+</form>
+
+{% if results %}
+    <h3>Results:</h3>
+    <table border="1">
+        <tr>
+            <th>Movie Title</th>
+            <th>Character Name</th>
+            <th>Gender</th>
+            <th>Homeworld</th>
+            <th>Planet Diameter</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>{{ result.0 }}</td>
+            <td>{{ result.1 }}</td>
+            <td>{{ result.2 }}</td>
+            <td>{{ result.3 }}</td>
+            <td>{{ result.4 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Nothing corresponding to your research.</p>
+{% endif %}
+{% endblock %}
